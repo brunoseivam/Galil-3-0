@@ -690,6 +690,19 @@ GalilController::GalilController(const char *portName, const char *address, doub
   createParam(GalilStatusPollDelayString, asynParamFloat64, &GalilStatusPollDelay_);
 
 //Add new parameters here
+  createParam(GalilMotorClosedLoopString,          asynParamInt32,   &GalilMotorClosedLoop_);
+  createParam(GalilMotorPIDOnBandString,           asynParamInt32,   &GalilMotorPIDOnBand_);
+  createParam(GalilMotorPIDOffBandString,          asynParamInt32,   &GalilMotorPIDOffBand_);
+  createParam(GalilMotorPGainMotionString,         asynParamFloat64, &GalilMotorPGainMotion_);
+  createParam(GalilMotorIGainMotionString,         asynParamFloat64, &GalilMotorIGainMotion_);
+  createParam(GalilMotorDGainMotionString,         asynParamFloat64, &GalilMotorDGainMotion_);
+  createParam(GalilMotorPGainStoppedString,        asynParamFloat64, &GalilMotorPGainStopped_);
+  createParam(GalilMotorIGainStoppedString,        asynParamFloat64, &GalilMotorIGainStopped_);
+  createParam(GalilMotorDGainStoppedString,        asynParamFloat64, &GalilMotorDGainStopped_);
+  createParam(GalilMotorMaxPulseFrequencyString,   asynParamInt32,   &GalilMotorMaxPulseFrequency_);
+  createParam(GalilMotorReducedCurrentDelayString, asynParamInt32,   &GalilMotorReducedCurrentDelay_);
+  createParam(GalilMotorReducedCurrentString,      asynParamInt32,   &GalilMotorReducedCurrent_);
+  createParam(GalilMotorStepperFrequencyString,    asynParamInt32,   &GalilMotorStepperFrequency_);
 
   createParam(GalilCommunicationErrorString, asynParamInt32, &GalilCommunicationError_);
 
@@ -3458,6 +3471,7 @@ asynStatus GalilController::readInt32(asynUser *pasynUser, epicsInt32 *value)
    GalilAxis *pAxis = getAxis(pasynUser);	//Retrieve the axis instance
    int ecatcapable;				//EtherCat capable status
    unsigned i;					//Looping
+   int addr;					//Address
 
    //Just return if shutting down
    if (shuttingDown_)
@@ -3470,6 +3484,10 @@ asynStatus GalilController::readInt32(asynUser *pasynUser, epicsInt32 *value)
    //For output records autosave, or db defaults are pushed to hardware instead
    if (!dbInitialized) return asynError;
     
+   //Retrieve address.  Used for Closed-loop parameters
+   status = getAddress(pasynUser, &addr);
+   if (status != asynSuccess) return(status);
+
    if (function == GalilHomeType_) {
       //Read home type from controller
       strcpy(cmd_, "MG _CN1");
@@ -3622,6 +3640,16 @@ asynStatus GalilController::readInt32(asynUser *pasynUser, epicsInt32 *value)
          status = get_integer(GalilEtherCatNetwork_, value);
       }
    }
+
+   // Closed-loop Paremeters
+   else if (function == GalilMotorClosedLoop_)          { sprintf(cmd_, "MG _CL%c", pAxis->axisName_); status = get_integer(GalilMotorClosedLoop_,          value, addr); }
+   else if (function == GalilMotorPIDOnBand_)           { sprintf(cmd_, "MG _DB%c", pAxis->axisName_); status = get_integer(GalilMotorPIDOnBand_,           value, addr); }
+   else if (function == GalilMotorPIDOffBand_)          { sprintf(cmd_, "MG _DS%c", pAxis->axisName_); status = get_integer(GalilMotorPIDOffBand_,          value, addr); }
+   else if (function == GalilMotorMaxPulseFrequency_)   { sprintf(cmd_, "MG _SK%c", pAxis->axisName_); status = get_integer(GalilMotorMaxPulseFrequency_,   value, addr); }
+   else if (function == GalilMotorReducedCurrentDelay_) { sprintf(cmd_, "MG _WC%c", pAxis->axisName_); status = get_integer(GalilMotorReducedCurrentDelay_, value, addr); }
+   else if (function == GalilMotorReducedCurrent_)      { sprintf(cmd_, "MG _WD%c", pAxis->axisName_); status = get_integer(GalilMotorReducedCurrent_,      value, addr); }
+   else if (function == GalilMotorStepperFrequency_)    { sprintf(cmd_, "MG _ZZ%c", pAxis->axisName_); status = get_integer(GalilMotorStepperFrequency_,    value, addr); }
+
    else
       status = asynPortDriver::readInt32(pasynUser, value);
 
@@ -3704,6 +3732,15 @@ asynStatus GalilController::readFloat64(asynUser *pasynUser, epicsFloat64 *value
      sprintf(cmd_, "MG @AN%d", addr);
      get_double(GalilAnalogIn_, value, addr);
      }
+
+  // Closed-loop parameters
+  else if (function == GalilMotorPGainMotion_)  { sprintf(cmd_, "MG _K1%c", pAxis->axisName_); status = get_double(GalilMotorPGainMotion_,  value, addr); }
+  else if (function == GalilMotorIGainMotion_)  { sprintf(cmd_, "MG _K2%c", pAxis->axisName_); status = get_double(GalilMotorIGainMotion_,  value, addr); }
+  else if (function == GalilMotorDGainMotion_)  { sprintf(cmd_, "MG _K3%c", pAxis->axisName_); status = get_double(GalilMotorDGainMotion_,  value, addr); }
+  else if (function == GalilMotorPGainStopped_) { sprintf(cmd_, "MG _KP%c", pAxis->axisName_); status = get_double(GalilMotorPGainStopped_, value, addr); }
+  else if (function == GalilMotorIGainStopped_) { sprintf(cmd_, "MG _KI%c", pAxis->axisName_); status = get_double(GalilMotorIGainStopped_, value, addr); }
+  else if (function == GalilMotorDGainStopped_) { sprintf(cmd_, "MG _KD%c", pAxis->axisName_); status = get_double(GalilMotorDGainStopped_, value, addr); }
+
   else  //Command not found
      asynPortDriver::readFloat64(pasynUser, value);
 
@@ -4094,6 +4131,15 @@ asynStatus GalilController::writeInt32(asynUser *pasynUser, epicsInt32 value)
         sync_writeReadController();
      }
   }
+
+  // Closed-loop Paremeters
+  else if (function == GalilMotorClosedLoop_)          { sprintf(cmd_, "CL%c=%d", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorPIDOnBand_)           { sprintf(cmd_, "DB%c=%d", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorPIDOffBand_)          { sprintf(cmd_, "DS%c=%d", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorMaxPulseFrequency_)   { sprintf(cmd_, "SK%c=%d", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorReducedCurrentDelay_) { sprintf(cmd_, "WC%c=%d", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorReducedCurrent_)      { sprintf(cmd_, "WD%c=%d", pAxis->axisName_, value); status = sync_writeReadController(); }
+
   else {
      /* Call base class method */
      status = asynMotorController::writeInt32(pasynUser, value);
@@ -4190,6 +4236,15 @@ asynStatus GalilController::writeFloat64(asynUser *pasynUser, epicsFloat64 value
      epicsSnprintf(cmd_, sizeof(cmd_), "%s=%lf", (const char*)pasynUser->userData, value);
      status = sync_writeReadController();
      }
+
+  // Closed-loop parameters
+  else if (function == GalilMotorPGainMotion_)  { sprintf(cmd_, "K1%c=%lf", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorIGainMotion_)  { sprintf(cmd_, "K2%c=%lf", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorDGainMotion_)  { sprintf(cmd_, "K3%c=%lf", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorPGainStopped_) { sprintf(cmd_, "KP%c=%lf", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorIGainStopped_) { sprintf(cmd_, "KI%c=%lf", pAxis->axisName_, value); status = sync_writeReadController(); }
+  else if (function == GalilMotorDGainStopped_) { sprintf(cmd_, "KD%c=%lf", pAxis->axisName_, value); status = sync_writeReadController(); }
+
   else
      {
      /* Call base class method */

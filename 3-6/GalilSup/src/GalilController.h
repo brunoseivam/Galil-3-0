@@ -231,6 +231,21 @@
 
 #define GalilStatusPollDelayString	"MOTOR_STATUS_POLL_DELAY"
 
+#define GalilMotorClosedLoopString          "MOTOR_GALIL_CLOSED_LOOP"
+#define GalilMotorPIDOnBandString           "MOTOR_PID_ON_BAND"
+#define GalilMotorPIDOffBandString          "MOTOR_PID_OFF_BAND"
+#define GalilMotorPGainMotionString         "MOTOR_P_GAIN_MOTION"
+#define GalilMotorIGainMotionString         "MOTOR_I_GAIN_MOTION"
+#define GalilMotorDGainMotionString         "MOTOR_D_GAIN_MOTION"
+#define GalilMotorPGainStoppedString        "MOTOR_P_GAIN_STOPPED"
+#define GalilMotorIGainStoppedString        "MOTOR_I_GAIN_STOPPED"
+#define GalilMotorDGainStoppedString        "MOTOR_D_GAIN_STOPPED"
+#define GalilMotorMaxPulseFrequencyString   "MOTOR_MAX_PULSE_FREQUENCY"
+#define GalilMotorReducedCurrentDelayString "MOTOR_REDUCED_CURRENT_DELAY"
+#define GalilMotorReducedCurrentString      "MOTOR_REDUCED_CURRENT"
+#define GalilMotorStepperFrequencyString    "MOTOR_STEPPER_FREQUENCY"
+
+
 //C++ "To String with Precision" static function template
 template <typename T>
 string tsp(const T a_value, const int n = 6);
@@ -543,6 +558,21 @@ protected:
   int GalilSerialNum_;
   int GalilStatusPollDelay_;
 //Add new parameters here
+
+  // Parameters for Closed-Loop Firmware
+  int GalilMotorClosedLoop_;
+  int GalilMotorPIDOnBand_;
+  int GalilMotorPIDOffBand_;
+  int GalilMotorPGainMotion_;
+  int GalilMotorIGainMotion_;
+  int GalilMotorDGainMotion_;
+  int GalilMotorPGainStopped_;
+  int GalilMotorIGainStopped_;
+  int GalilMotorDGainStopped_;
+  int GalilMotorMaxPulseFrequency_;
+  int GalilMotorReducedCurrentDelay_;
+  int GalilMotorReducedCurrent_;
+  int GalilMotorStepperFrequency_;
 
   int GalilCommunicationError_;
   #define LAST_GALIL_PARAM GalilCommunicationError_

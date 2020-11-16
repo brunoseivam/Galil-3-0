@@ -1,0 +1,292 @@
+# $File: //ASP/Dev/SBS/4_Controls/4_3_Network_Infrastructure/4_3_1_Comms_Common_Services/sw/device_drivers/Galil/1-5/galilSup/Db/galil_motor_closed_loop.template $
+# $Revision: #1 $
+# $DateTime: 2020/11/17 12:39:43 $
+# $Author: bmartins $
+#
+# Description
+# Template file for motor extra commands/readbacks related to closed loop operation, that are additional to motor Record functionality
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# Licence as published by the Free Software Foundation; either
+# version 2.1 of the Licence, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public Licence for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# Licence along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Contact details:
+# cliftm@ansto.gov.au
+# 800 Blackburn Road, Clayton, Victoria 3168, Australia.
+#
+
+record(bi, "$(P)$(M)_CLOSEDLOOP_STATUS")
+{
+    field(DESC, "Closed Loop status")
+    field(DTYP, "asynInt32")
+    field(SCAN, "$(SCAN)")
+    field(ZNAM, "Off")
+    field(ONAM, "On")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_GALIL_CLOSED_LOOP")
+}
+
+record(bo, "$(P)$(M)_CLOSEDLOOP_CMD")
+{
+    field(DESC, "Closed Loop command")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "Off")
+    field(ONAM, "On")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_GALIL_CLOSED_LOOP")
+    field(FLNK, "$(P)$(M)_CLOSEDLOOP_STATUS")
+}
+
+record(longin, "$(P)$(M)_PIDONBAND_MON")
+{
+    field(DESC, "PID On Band monitor")
+    field(DTYP, "asynInt32")
+    field(SCAN, "$(SCAN)")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_PID_ON_BAND")
+}
+
+record(longout, "$(P)$(M)_PIDONBAND_SP")
+{
+    field(DESC, "PID On Band setpoint")
+    field(DTYP, "asynInt32")
+    field(DRVL, "0")
+    field(DRVH, "32767")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_PID_ON_BAND")
+    field(FLNK, "$(P)$(M)_PIDONBAND_MON")
+}
+
+record(longin, "$(P)$(M)_PIDOFFBAND_MON")
+{
+    field(DESC, "PID Off Band monitor")
+    field(DTYP, "asynInt32")
+    field(SCAN, "$(SCAN)")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_PID_OFF_BAND")
+}
+
+record(longout, "$(P)$(M)_PIDOFFBAND_SP")
+{
+    field(DESC, "PID Off Band setpoint")
+    field(DTYP, "asynInt32")
+    field(DRVL, "0")
+    field(DRVH, "32767")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_PID_OFF_BAND")
+    field(FLNK, "$(P)$(M)_PIDOFFBAND_MON")
+}
+
+record(ai, "$(P)$(M)_PGAINMOTION_MON")
+{
+    field(DESC, "PID P Gain Motion monitor")
+    field(DTYP, "asynFloat64")
+    field(SCAN, "$(SCAN)")
+    field(PREC, "3")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_P_GAIN_MOTION")
+}
+
+record(ao, "$(P)$(M)_PGAINMOTION_SP")
+{
+    field(DESC, "PID P Gain Motion setpoint")
+    field(DTYP, "asynFloat64")
+    field(DRVL, "0")
+    field(DRVH, "1023.875")
+    field(PREC, "3")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_P_GAIN_MOTION")
+    field(FLNK, "$(P)$(M)_PGAINMOTION_MON")
+}
+
+record(ai, "$(P)$(M)_IGAINMOTION_MON")
+{
+    field(DESC, "PID I Gain Motion monitor")
+    field(DTYP, "asynFloat64")
+    field(SCAN, "$(SCAN)")
+    field(PREC, "3")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_I_GAIN_MOTION")
+}
+
+record(ao, "$(P)$(M)_IGAINMOTION_SP")
+{
+    field(DESC, "PID I Gain Motion setpoint")
+    field(DTYP, "asynFloat64")
+    field(DRVL, "0")
+    field(DRVH, "255.999")
+    field(PREC, "3")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_I_GAIN_MOTION")
+    field(FLNK, "$(P)$(M)_IGAINMOTION_MON")
+}
+
+record(ai, "$(P)$(M)_DGAINMOTION_MON")
+{
+    field(DESC, "PID D Gain Motion monitor")
+    field(DTYP, "asynFloat64")
+    field(SCAN, "$(SCAN)")
+    field(PREC, "3")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_D_GAIN_MOTION")
+}
+
+record(ao, "$(P)$(M)_DGAINMOTION_SP")
+{
+    field(DESC, "PID D Gain Motion setpoint")
+    field(DTYP, "asynFloat64")
+    field(DRVL, "0")
+    field(DRVH, "4095.875")
+    field(PREC, "3")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_D_GAIN_MOTION")
+    field(FLNK, "$(P)$(M)_DGAINMOTION_MON")
+}
+
+record(ai, "$(P)$(M)_PGAINSTOPPED_MON")
+{
+    field(DESC, "PID P Gain Stopped monitor")
+    field(DTYP, "asynFloat64")
+    field(SCAN, "$(SCAN)")
+    field(PREC, "3")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_P_GAIN_STOPPED")
+}
+
+record(ao, "$(P)$(M)_PGAINSTOPPED_SP")
+{
+    field(DESC, "PID P Gain Stopped setpoint")
+    field(DTYP, "asynFloat64")
+    field(DRVL, "0")
+    field(DRVH, "1023.875")
+    field(PREC, "3")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_P_GAIN_STOPPED")
+    field(FLNK, "$(P)$(M)_PGAINSTOPPED_MON")
+}
+
+record(ai, "$(P)$(M)_IGAINSTOPPED_MON")
+{
+    field(DESC, "PID I Gain Stopped monitor")
+    field(DTYP, "asynFloat64")
+    field(SCAN, "$(SCAN)")
+    field(PREC, "3")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_I_GAIN_STOPPED")
+}
+
+record(ao, "$(P)$(M)_IGAINSTOPPED_SP")
+{
+    field(DESC, "PID I Gain Stopped setpoint")
+    field(DTYP, "asynFloat64")
+    field(DRVL, "0")
+    field(DRVH, "255.999")
+    field(PREC, "3")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_I_GAIN_STOPPED")
+    field(FLNK, "$(P)$(M)_IGAINSTOPPED_MON")
+}
+
+record(ai, "$(P)$(M)_DGAINSTOPPED_MON")
+{
+    field(DESC, "PID D Gain Stopped monitor")
+    field(DTYP, "asynFloat64")
+    field(SCAN, "$(SCAN)")
+    field(PREC, "3")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_D_GAIN_STOPPED")
+}
+
+record(ao, "$(P)$(M)_DGAINSTOPPED_SP")
+{
+    field(DESC, "PID D Gain Stopped setpoint")
+    field(DTYP, "asynFloat64")
+    field(DRVL, "0")
+    field(DRVH, "4095.875")
+    field(PREC, "3")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_D_GAIN_STOPPED")
+    field(FLNK, "$(P)$(M)_DGAINSTOPPED_MON")
+}
+
+record(longin, "$(P)$(M)_MAXPULSEFREQ_MON")
+{
+    field(DESC, "Max Pulse Frequency monitor")
+    field(DTYP, "asynInt32")
+    field(SCAN, "$(SCAN)")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_MAX_PULSE_FREQUENCY")
+}
+
+record(longout, "$(P)$(M)_MAXPULSEFREQ_SP")
+{
+    field(DESC, "Max Pulse Frequency setpoint")
+    field(DTYP, "asynInt32")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_MAX_PULSE_FREQUENCY")
+    field(FLNK, "$(P)$(M)_MAXPULSEFREQ_MON")
+}
+
+record(longin, "$(P)$(M)_REDUCCURRDLY_MON")
+{
+    field(DESC, "Reduced Current Delay monitor")
+    field(DTYP, "asynInt32")
+    field(SCAN, "$(SCAN)")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_REDUCED_CURRENT_DELAY")
+}
+
+record(longout, "$(P)$(M)_REDUCCURRDLY_SP")
+{
+    field(DESC, "Reduced Current Delay setpoint")
+    field(DTYP, "asynInt32")
+    field(DRVL, "1")
+    field(DRVH, "5000")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_REDUCED_CURRENT_DELAY")
+    field(FLNK, "$(P)$(M)_REDUCCURRDLY_MON")
+}
+
+record(bi, "$(P)$(M)_REDUCCURR_STATUS")
+{
+    field(DESC, "Reduced Current status")
+    field(DTYP, "asynInt32")
+    field(SCAN, "$(SCAN)")
+    field(ZNAM, "0% Reduced")
+    field(ONAM, "25% Reduced")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_REDUCED_CURRENT")
+}
+
+record(bo, "$(P)$(M)_REDUCCURR_CMD")
+{
+    field(DESC, "Reduced Current command")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "0% Reduced")
+    field(ONAM, "25% Reduced")
+
+    field(OUT,  "@asyn($(PORT),$(ADDR))MOTOR_REDUCED_CURRENT")
+    field(FLNK, "$(P)$(M)_REDUCCURR_STATUS")
+}
+
+record(longin, "$(P)$(M)_STEPFREQ_MON")
+{
+    field(DESC, "Stepper Frequency monitor")
+    field(DTYP, "asynInt32")
+    field(SCAN, "$(SCAN)")
+
+    field(INP,  "@asyn($(PORT),$(ADDR))MOTOR_STEPPER_FREQUENCY")
+}
+
